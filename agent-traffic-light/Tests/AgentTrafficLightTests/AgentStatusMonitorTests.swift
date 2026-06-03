@@ -1,8 +1,9 @@
 import Foundation
-import XCTest
+import Testing
 @testable import AgentTrafficLight
 
-final class AgentStatusMonitorTests: XCTestCase {
+struct AgentStatusMonitorTests {
+    @Test
     func testCollectOnceAggregatesProviderSnapshots() async {
         let clock = FixedClock(now: Date(timeIntervalSince1970: 1_800_000_000))
         let monitor = AgentStatusMonitor(
@@ -15,18 +16,19 @@ final class AgentStatusMonitorTests: XCTestCase {
 
         let report = await monitor.collectOnce()
 
-        XCTAssertEqual(report.overallState, .working)
-        XCTAssertEqual(report.snapshots.map(\.agentID), ["claude", "codex"])
-        XCTAssertEqual(report.collectedAt, clock.now)
+        #expect(report.overallState == .working)
+        #expect(report.snapshots.map(\.agentID) == ["claude", "codex"])
+        #expect(report.collectedAt == clock.now)
     }
 
+    @Test
     func testCollectOnceWithNoProvidersReturnsUnknownReport() async {
         let monitor = AgentStatusMonitor(providers: [])
 
         let report = await monitor.collectOnce()
 
-        XCTAssertEqual(report.overallState, .unknown)
-        XCTAssertTrue(report.snapshots.isEmpty)
+        #expect(report.overallState == .unknown)
+        #expect(report.snapshots.isEmpty)
     }
 }
 

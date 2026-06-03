@@ -1,13 +1,15 @@
-import XCTest
+import Testing
 @testable import AgentTrafficLight
 
-final class OverallStatusReducerTests: XCTestCase {
+struct OverallStatusReducerTests {
     private let reducer = OverallStatusReducer()
 
+    @Test
     func testEmptySnapshotsReturnUnknown() {
-        XCTAssertEqual(reducer.reduce([]), .unknown)
+        #expect(reducer.reduce([]) == .unknown)
     }
 
+    @Test
     func testWaitingForUserHasHighestPriority() {
         let snapshots = [
             snapshot("codex", .working),
@@ -15,9 +17,10 @@ final class OverallStatusReducerTests: XCTestCase {
             snapshot("cursor", .error)
         ]
 
-        XCTAssertEqual(reducer.reduce(snapshots), .waitingForUser)
+        #expect(reducer.reduce(snapshots) == .waitingForUser)
     }
 
+    @Test
     func testWorkingHasPriorityOverErrorAndUnknown() {
         let snapshots = [
             snapshot("codex", .unknown),
@@ -25,9 +28,10 @@ final class OverallStatusReducerTests: XCTestCase {
             snapshot("cursor", .working)
         ]
 
-        XCTAssertEqual(reducer.reduce(snapshots), .working)
+        #expect(reducer.reduce(snapshots) == .working)
     }
 
+    @Test
     func testErrorHasPriorityOverUnknownAndIdle() {
         let snapshots = [
             snapshot("codex", .idle),
@@ -35,25 +39,27 @@ final class OverallStatusReducerTests: XCTestCase {
             snapshot("cursor", .error)
         ]
 
-        XCTAssertEqual(reducer.reduce(snapshots), .error)
+        #expect(reducer.reduce(snapshots) == .error)
     }
 
+    @Test
     func testUnknownHasPriorityOverIdle() {
         let snapshots = [
             snapshot("codex", .idle),
             snapshot("claude", .unknown)
         ]
 
-        XCTAssertEqual(reducer.reduce(snapshots), .unknown)
+        #expect(reducer.reduce(snapshots) == .unknown)
     }
 
+    @Test
     func testAllIdleReturnsIdle() {
         let snapshots = [
             snapshot("codex", .idle),
             snapshot("claude", .idle)
         ]
 
-        XCTAssertEqual(reducer.reduce(snapshots), .idle)
+        #expect(reducer.reduce(snapshots) == .idle)
     }
 
     private func snapshot(_ id: String, _ state: AgentState) -> AgentSnapshot {
